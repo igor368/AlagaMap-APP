@@ -7,7 +7,7 @@ import axios from 'axios';
 
 //produção
 const api = axios.create({
-  baseURL: 'alagamap-production.up.railway.app',
+  baseURL: 'https://alagamap-production.up.railway.app',
 });
 
 
