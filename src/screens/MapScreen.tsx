@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, Button, StyleSheet, ActivityIndicator } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useAuth } from '../context/AuthContext';
 import { Report } from '../services/report';
 import api from '../services/api';
+import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 
 type ClusteredReport = Report & { count?: number };
 
@@ -13,10 +14,6 @@ export default function MapScreen({ navigation }: any) {
   const [initialRegion, setInitialRegion] = useState<Region | null>(null);
   const [loading, setLoading] = useState(true);
   const { token } = useAuth();
-
-  useEffect(() => {
-    getLocationAndReports();
-  }, []);
 
   const getLocationAndReports = async () => {
     try {
@@ -56,6 +53,13 @@ export default function MapScreen({ navigation }: any) {
       setLoading(false);
     }
   };
+
+  // Use useFocusEffect to refetch reports when the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      getLocationAndReports();
+    }, [])
+  );
 
   // Agrupa relatórios muito próximos
   const clusterNearbyReports = (reports: Report[], threshold: number): ClusteredReport[] => {
